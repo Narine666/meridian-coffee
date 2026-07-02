@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const LINKS = [
@@ -39,13 +40,19 @@ export default function Nav() {
       >
         <nav className="mx-auto flex max-w-[88rem] items-center justify-between px-6 py-4 sm:px-10">
           {/* wordmark */}
-          <a href="#top" className="group flex items-baseline gap-2">
-            <span className="font-display text-xl font-semibold tracking-tight text-ink">
-              Meridian
-            </span>
-            <span className="hidden text-marigold transition-transform duration-300 group-hover:rotate-90 sm:inline">
-              ✦
-            </span>
+          <a
+            href="#top"
+            aria-label="Meridian Coffee Roasters — home"
+            className="flex items-center"
+          >
+            <Image
+              src="/logo.png"
+              alt="Meridian Coffee Roasters"
+              width={501}
+              height={77}
+              priority
+              className="h-12 w-auto sm:h-20 lg:h-28"
+            />
           </a>
 
           {/* desktop links */}

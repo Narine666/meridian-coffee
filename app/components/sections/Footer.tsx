@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import CoffeeBeans from "../ui/CoffeeBeans";
 import Grain from "../ui/Grain";
 
@@ -28,9 +30,16 @@ export default function Footer() {
           <div className="lg:col-span-5">
             <a
               href="#top"
-              className="font-display text-4xl font-semibold tracking-tight text-ink"
+              aria-label="Meridian Coffee Roasters — home"
+              className="inline-flex"
             >
-              Meridian <span className="text-marigold">✦</span>
+              <Image
+                src="/logo.png"
+                alt="Meridian Coffee Roasters"
+                width={501}
+                height={77}
+                className="h-14 w-auto sm:h-20 lg:h-[5.5rem]"
+              />
             </a>
             <p className="mt-5 max-w-sm leading-relaxed text-ink-muted">
               Single-origin coffee, roasted to its own true north. New lots and
