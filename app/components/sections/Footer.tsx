@@ -38,7 +38,7 @@ export default function Footer() {
                 alt="Meridian Coffee Roasters"
                 width={501}
                 height={77}
-                className="h-14 w-auto sm:h-20 lg:h-[5.5rem]"
+                className="h-10 w-auto sm:h-11 lg:h-12"
               />
             </a>
             <p className="mt-5 max-w-sm leading-relaxed text-ink-muted">

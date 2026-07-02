@@ -51,7 +51,7 @@ export default function Nav() {
               width={501}
               height={77}
               priority
-              className="h-12 w-auto sm:h-20 lg:h-28"
+              className="h-8 w-auto sm:h-9 lg:h-10"
             />
           </a>
 
