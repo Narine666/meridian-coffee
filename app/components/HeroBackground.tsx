@@ -1,122 +1,171 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
- * HeroBackground — the riso coffee illustration as a full-bleed hero
- * backdrop, with warm readability gradients baked on top.
+ * HeroBackground — cursor "spotlight reveal" over a calm, embedded backdrop.
  *
- * Interactive (fine pointer + motion allowed only): the image drifts a few
- * pixels against the cursor for a gentle parallax, and a warm spotlight pool
- * follows the cursor. Touch devices and prefers-reduced-motion get the
- * static image + gradients. The image is always decorative here — the
- * headline carries the meaning — so it's aria-hidden.
+ * The illustration is a single, perfectly-still layer (fixed 1.05 scale so it
+ * bleeds past every edge — no mouse-driven movement or scaling). A cheap
+ * overlay darkens the whole hero to a moody baseline, with a soft-edged
+ * radial "hole" that follows the cursor so the brighter artwork shows through
+ * — a warm spotlight of swirls tracking the mouse.
+ *
+ * The hole is just a repositioned radial-gradient (no CSS mask + filter per
+ * frame), so it repaints cheaply and tracks the cursor in real time. A global
+ * tint + edge vignette let the artwork melt into the dark page, and the strong
+ * left gradient keeps the headline/stats readable.
+ *
+ * Touch devices and prefers-reduced-motion never mount the shade, so they get
+ * the calm static image with no spotlight.
  */
+
+const SCALE = 1.05; // fixed edge-bleed scale (never animated)
+const RADIUS = 230; // px — spotlight reveal radius
+const EASE = 0.5; // follow smoothing (higher = snappier)
+const SHADE = "rgba(23,18,14,0.62)"; // moody dim outside the spotlight
+
+const IMAGE: React.CSSProperties = {
+  backgroundImage: "url(/hero-bg.png)",
+  backgroundSize: "cover",
+  backgroundPosition: "left center",
+  transform: `scale(${SCALE})`,
+  transformOrigin: "center",
+  filter: "brightness(0.78) saturate(0.9)",
+};
+
 export default function HeroBackground() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
+  const shadeRef = useRef<HTMLDivElement>(null);
+  const [enabled, setEnabled] = useState(false);
 
+  // decide whether to run the effect at all (fine pointer + motion allowed)
   useEffect(() => {
-    const root = rootRef.current;
-    const img = imgRef.current;
-    if (!root || !img) return;
-
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (!fine.matches || still.matches) return;
+    const id = requestAnimationFrame(() => setEnabled(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  // wire up the eased spotlight hole once the shade layer is mounted
+  useEffect(() => {
+    if (!enabled) return;
+    const root = rootRef.current;
+    const shade = shadeRef.current;
+    if (!root || !shade) return;
 
     let raf = 0;
-    let pointer: { x: number; y: number } | null = null;
+    let target: { x: number; y: number } | null = null;
+    let cx = 0;
+    let cy = 0;
+    let cr = 0; // current radius (eased 0 → RADIUS)
+    let tx = 0;
+    let ty = 0;
 
-    const render = () => {
-      raf = 0;
-      const rect = root.getBoundingClientRect();
-      const glow = glowRef.current;
+    const frame = () => {
+      const tr = target ? RADIUS : 0;
+      if (target) {
+        tx = target.x;
+        ty = target.y;
+      }
+      cx += (tx - cx) * EASE;
+      cy += (ty - cy) * EASE;
+      cr += (tr - cr) * EASE;
 
-      if (!pointer) {
-        img.style.transform = "scale(1.08) translate3d(0,0,0)";
-        if (glow) glow.style.opacity = "0";
+      // hole fully closed & idle → solid moody shade, stop the loop
+      if (!target && cr < 0.6) {
+        shade.style.background = SHADE;
+        raf = 0;
         return;
       }
 
-      // parallax — shift opposite the cursor, kept inside the 8% overscan
-      const nx = pointer.x / rect.width - 0.5;
-      const ny = pointer.y / rect.height - 0.5;
-      img.style.transform = `scale(1.08) translate3d(${-nx * 26}px, ${
-        -ny * 20
-      }px, 0)`;
-
-      if (glow) {
-        glow.style.background = `radial-gradient(circle ${
-          rect.width * 0.34
-        }px at ${pointer.x}px ${pointer.y}px, rgba(231,163,58,0.24), rgba(231,163,58,0) 60%)`;
-        glow.style.opacity = "1";
-      }
+      shade.style.background = `radial-gradient(circle ${cr}px at ${cx}px ${cy}px, transparent 0, transparent 30%, ${SHADE} 78%)`;
+      raf = requestAnimationFrame(frame);
     };
 
-    const request = () => {
-      if (!raf) raf = requestAnimationFrame(render);
+    const ensure = () => {
+      if (!raf) raf = requestAnimationFrame(frame);
     };
+
     const onMove = (e: PointerEvent) => {
       const rect = root.getBoundingClientRect();
-      pointer = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-      request();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const inside =
+        x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
+      if (inside) {
+        // snap on (re)entry so the spotlight grows in place, not from a corner
+        if (!target) {
+          cx = x;
+          cy = y;
+        }
+        target = { x, y };
+      } else {
+        target = null;
+      }
+      ensure();
     };
     const onLeave = () => {
-      pointer = null;
-      request();
+      target = null;
+      ensure();
     };
 
-    root.addEventListener("pointermove", onMove);
-    root.addEventListener("pointerleave", onLeave);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("pointerleave", onLeave);
     return () => {
-      root.removeEventListener("pointermove", onMove);
-      root.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerleave", onLeave);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [enabled]);
 
   return (
-    <div
-      ref={rootRef}
-      aria-hidden
-      className="absolute inset-0 overflow-hidden"
-    >
-      {/* the illustration, slightly overscanned so parallax never reveals an edge */}
+    <div ref={rootRef} aria-hidden className="absolute inset-0 overflow-hidden">
+      {/* the illustration — calmed, static, bleeding past every edge */}
+      <div className="absolute inset-0" style={IMAGE} />
+
+      {/* subtle espresso tint over the whole image — calm, moody atmosphere */}
       <div
-        ref={imgRef}
-        className="absolute inset-0 [transition:transform_0.6s_cubic-bezier(0.22,1,0.36,1)]"
-        style={{
-          backgroundImage: "url(/hero-coffee.png)",
-          backgroundSize: "cover",
-          backgroundPosition: "center 26%",
-          transform: "scale(1.08)",
-          willChange: "transform",
-        }}
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "rgba(33,26,21,0.2)" }}
       />
 
-      {/* warm spotlight pool that tracks the cursor */}
-      <div
-        ref={glowRef}
-        className="pointer-events-none absolute inset-0 opacity-0 [transition:opacity_0.6s_ease]"
-        style={{ mixBlendMode: "soft-light" }}
-      />
+      {/* moody shade with a cursor-following spotlight hole.
+          Only mounted when the effect is enabled. */}
+      {enabled && (
+        <div
+          ref={shadeRef}
+          className="pointer-events-none absolute inset-0"
+          style={{ background: SHADE, willChange: "background" }}
+        />
+      )}
 
-      {/* readability: warm espresso wash, darkest on the left under the headline */}
+      {/* edge vignette — the swirls melt into the dark page at the borders */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(90deg, rgba(33,26,21,0.92) 0%, rgba(33,26,21,0.7) 40%, rgba(33,26,21,0.34) 70%, rgba(33,26,21,0.52) 100%)",
+            "radial-gradient(115% 115% at 50% 48%, rgba(25,20,16,0) 52%, rgba(25,20,16,0.92) 100%)",
         }}
       />
-      {/* vertical falloff to seat the nav (top) and the stats row (bottom) */}
+
+      {/* left readability wash — near-solid on the far left, gone by centre.
+          Above the image so text stays legible under any spotlight. */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(25,20,16,0.72) 0%, rgba(25,20,16,0) 24%, rgba(25,20,16,0) 54%, rgba(25,20,16,0.85) 100%)",
+            "linear-gradient(90deg, rgba(33,26,21,0.95) 0%, rgba(33,26,21,0.9) 18%, rgba(33,26,21,0.58) 36%, rgba(33,26,21,0.18) 52%, rgba(33,26,21,0) 64%)",
+        }}
+      />
+
+      {/* soft top/bottom falloff to seat the nav + labels and the stats row */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(25,20,16,0.55) 0%, rgba(25,20,16,0.24) 14%, rgba(25,20,16,0) 30%, rgba(25,20,16,0) 66%, rgba(25,20,16,0.6) 100%)",
         }}
       />
     </div>

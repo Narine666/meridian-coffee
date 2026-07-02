@@ -12,7 +12,7 @@ export default function Hero() {
       {/* content sits on top of the image */}
       <div className="relative z-10 mx-auto flex w-full max-w-[88rem] flex-1 flex-col px-6 pb-10 pt-28 sm:px-10 sm:pt-32">
         {/* archival top strip */}
-        <div className="flex items-center justify-between text-ink/70">
+        <div className="flex items-center justify-between text-ink/80 [text-shadow:0_1px_12px_rgba(25,20,16,0.75)]">
           <span className="label">Est. 2014 — Portland, OR</span>
           <span className="label hidden sm:inline">Lat. 45.5° N</span>
           <span className="label">№ 001 / Single-Origin</span>
@@ -22,7 +22,10 @@ export default function Hero() {
         {/* headline — anchored left, vertically centred in the hero */}
         <div className="flex flex-1 flex-col justify-center py-14">
           <div className="max-w-2xl">
-            <h1 className="font-display font-light leading-[0.9] tracking-[-0.02em] text-ink text-[clamp(3rem,9vw,8rem)] [text-shadow:0_2px_40px_rgba(25,20,16,0.55)]">
+            <h1
+              className="rise-in font-display font-light leading-[0.9] tracking-[-0.02em] text-ink text-[clamp(3rem,9vw,8rem)] [text-shadow:0_2px_40px_rgba(25,20,16,0.55)]"
+              style={{ animationDelay: "0.05s" }}
+            >
               <span className="block">Roasted to</span>
               <span className="block">
                 its own{" "}
@@ -30,13 +33,19 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="mt-8 max-w-md text-lg leading-relaxed text-ink/85 [text-shadow:0_1px_18px_rgba(25,20,16,0.6)]">
+            <p
+              className="rise-in mt-8 max-w-md text-lg leading-relaxed text-ink/85 [text-shadow:0_1px_18px_rgba(25,20,16,0.6)]"
+              style={{ animationDelay: "0.18s" }}
+            >
               A heritage coffee house, reimagined. We source single-origin
               beans from a handful of trusted farms and roast them in small
               batches — nothing hidden, nothing rushed.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div
+              className="rise-in mt-9 flex flex-wrap items-center gap-4"
+              style={{ animationDelay: "0.3s" }}
+            >
               <a
                 href="#coffees"
                 className="label group inline-flex items-center gap-2 rounded-full bg-marigold px-6 py-4 text-espresso transition-transform duration-300 hover:-translate-y-0.5"
