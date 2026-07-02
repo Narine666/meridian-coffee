@@ -103,6 +103,41 @@ body {
   animation: rise-in 0.85s var(--ease-out-soft) both;
 }
 
+/* --- ambient floating beans (visit section) ------------------------ */
+
+/* slow, calm updraft — small vertical drift + gentle sway. Two variants
+   so beans in the same view don't share a path; stagger further per-bean
+   via inline animation-duration / animation-delay. */
+@keyframes bean-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(7px, -20px, 0) rotate(4deg);
+  }
+}
+
+@keyframes bean-float-alt {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-9px, -16px, 0) rotate(-5deg);
+  }
+}
+
+.bean-float {
+  animation: bean-float 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.bean-float-alt {
+  animation: bean-float-alt 9s ease-in-out infinite;
+  will-change: transform;
+}
+
 /* --- scroll reveal ------------------------------------------------- */
 
 .reveal {
@@ -130,6 +165,10 @@ body {
   }
   .rise-in {
     opacity: 1;
+    animation: none;
+  }
+  .bean-float,
+  .bean-float-alt {
     animation: none;
   }
 }

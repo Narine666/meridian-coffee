@@ -1,4 +1,4 @@
-import HeroBackground from "./HeroBackground";
+import HeroBackground from "../ui/HeroBackground";
 
 export default function Hero() {
   return (

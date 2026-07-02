@@ -1,9 +1,56 @@
-import Reveal from "./Reveal";
+import { Bean, type BeanColors } from "../ui/CoffeeBeans";
+import Reveal from "../ui/Reveal";
+
+// dark espresso beans so they read against the ochre background, ~10% opacity
+const ESPRESSO: BeanColors = {
+  fill: "rgba(33,26,21,0.1)",
+  stroke: "rgba(33,26,21,0.12)",
+  crease: "rgba(33,26,21,0.16)",
+};
+
+// beans tucked into empty areas only (desktop, where the whitespace exists),
+// each gently floating on a slightly different, staggered loop
+const VISIT_BEANS = [
+  { filled: true, size: 52, rotate: -22, alt: false, dur: 8.5, delay: 0, style: { top: "36%", left: "51%" } },
+  { filled: false, size: 34, rotate: 30, alt: true, dur: 10, delay: 1.2, style: { bottom: "15%", left: "6%" } },
+  { filled: false, size: 26, rotate: -12, alt: false, dur: 7.5, delay: 0.6, style: { bottom: "30%", left: "43%" } },
+  { filled: true, size: 30, rotate: 16, alt: true, dur: 9.5, delay: 2, style: { top: "60%", left: "54%" } },
+  { filled: false, size: 40, rotate: -8, alt: false, dur: 8, delay: 1.6, style: { bottom: "13%", left: "31%" } },
+];
 
 export default function Visit() {
   return (
-    <section id="visit" className="bg-marigold text-espresso">
-      <div className="mx-auto max-w-[88rem] px-6 py-24 sm:px-10 sm:py-32">
+    <section
+      id="visit"
+      className="relative overflow-hidden bg-marigold text-espresso"
+    >
+      {/* quiet coffee-bean detail in the empty space (desktop only), each
+          gently floating. Outer wrapper carries the float animation; the
+          inner element holds the bean's resting tilt so the two don't fight. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 hidden lg:block">
+        {VISIT_BEANS.map((bean, i) => (
+          <div
+            key={i}
+            className={`absolute ${bean.alt ? "bean-float-alt" : "bean-float"}`}
+            style={{
+              ...bean.style,
+              width: bean.size,
+              height: bean.size * 1.36,
+              animationDuration: `${bean.dur}s`,
+              animationDelay: `${bean.delay}s`,
+            }}
+          >
+            <div
+              className="h-full w-full"
+              style={{ transform: `rotate(${bean.rotate}deg)` }}
+            >
+              <Bean filled={bean.filled} colors={ESPRESSO} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-[88rem] px-6 py-24 sm:px-10 sm:py-32">
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <Reveal>

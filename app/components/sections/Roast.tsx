@@ -1,4 +1,5 @@
-import Reveal from "./Reveal";
+import Grain from "../ui/Grain";
+import Reveal from "../ui/Reveal";
 
 const STEPS = [
   {
@@ -25,8 +26,9 @@ const STEPS = [
 
 export default function Roast() {
   return (
-    <section id="roast" className="relative bg-espresso-deep">
-      <div className="mx-auto max-w-[88rem] px-6 py-24 sm:px-10 sm:py-32">
+    <section id="roast" className="relative overflow-hidden bg-espresso-deep">
+      <Grain opacity={0.05} />
+      <div className="relative mx-auto max-w-[88rem] px-6 py-24 sm:px-10 sm:py-32">
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-16">
           {/* sticky heading rail */}
           <div className="lg:col-span-5">

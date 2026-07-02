@@ -1,3 +1,6 @@
+import CoffeeBeans from "../ui/CoffeeBeans";
+import Grain from "../ui/Grain";
+
 const COLUMNS = [
   {
     heading: "Shop",
@@ -15,8 +18,11 @@ const COLUMNS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-espresso-deep text-ink">
-      <div className="mx-auto max-w-[88rem] px-6 pb-10 pt-20 sm:px-10">
+    <footer className="relative overflow-hidden bg-espresso-deep text-ink">
+      {/* branded scatter of coffee beans, behind everything */}
+      <CoffeeBeans />
+
+      <div className="relative z-10 mx-auto max-w-[88rem] px-6 pb-10 pt-20 sm:px-10">
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
           {/* wordmark + newsletter */}
           <div className="lg:col-span-5">
@@ -88,6 +94,9 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      {/* static riso-grain texture across the footer */}
+      <Grain opacity={0.05} />
     </footer>
   );
 }

@@ -1,6 +1,6 @@
 import { coffees, type Coffee } from "@/src/data/coffees";
-import AddToBag from "./AddToBag";
-import Reveal from "./Reveal";
+import AddToBag from "../ui/AddToBag";
+import Reveal from "../ui/Reveal";
 
 // light → dark roast indicator: five segments filled to the roast level
 function RoastMeter({ roast }: { roast: Coffee["roast"] }) {

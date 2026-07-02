@@ -1,10 +1,10 @@
-import Nav from "./components/Nav";
-import Hero from "./components/Hero";
-import Story from "./components/Story";
-import Coffees from "./components/Coffees";
-import Roast from "./components/Roast";
-import Visit from "./components/Visit";
-import Footer from "./components/Footer";
+import Nav from "./components/layout/Nav";
+import Hero from "./components/sections/Hero";
+import Story from "./components/sections/Story";
+import Coffees from "./components/sections/Coffees";
+import Roast from "./components/sections/Roast";
+import Visit from "./components/sections/Visit";
+import Footer from "./components/sections/Footer";
 
 export default function Home() {
   return (
